@@ -1,10 +1,25 @@
 package training.chessington.model;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Coordinates {
     private final int row;
     private final int col;
+    public static List<Coordinates> axialDirections;
+    public static List<Coordinates> diagonalDirections;
+
+    static {
+        axialDirections = Stream.of(new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}})
+                .map(dir -> new Coordinates(dir[0], dir[1]))
+                .collect(Collectors.toList());
+
+        diagonalDirections = Stream.of(new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}})
+                .map(dir -> new Coordinates(dir[0], dir[1]))
+                .collect(Collectors.toList());
+    }
 
     public Coordinates(int row, int col) {
         this.row = row;
@@ -42,7 +57,11 @@ public final class Coordinates {
         return new Coordinates(row + rowDiff, col + colDiff);
     }
 
+    public Coordinates plus(Coordinates toAdd) {
+        return new Coordinates(row + toAdd.getRow(), col + toAdd.getCol());
+    }
+
     public boolean isOnBoard() {
-        return 0 <= row && row < 8 && 0 <= col && col <= 8;
+        return 0 <= row && row < 8 && 0 <= col && col < 8;
     }
 }

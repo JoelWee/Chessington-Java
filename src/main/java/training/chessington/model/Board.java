@@ -49,4 +49,17 @@ public class Board {
     public void placePiece(Coordinates coords, Piece piece) {
         board[coords.getRow()][coords.getCol()] = piece;
     }
+
+
+    public boolean isEmptyOrCapturable(Coordinates coords,  PlayerColour ownColour) {
+        return isEmpty(coords) || isCapturable(coords, ownColour);
+    }
+
+    public boolean isEmpty(Coordinates coords) {
+        return get(coords) == null;
+    }
+
+    public boolean isCapturable(Coordinates coords, PlayerColour ownColour) {
+        return !isEmpty(coords) && get(coords).getColour() != ownColour;
+    }
 }

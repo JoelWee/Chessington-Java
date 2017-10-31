@@ -15,6 +15,23 @@ public class King extends AbstractPiece {
 
     @Override
     public List<Move> getAllowedMoves(Coordinates from, Board board) {
-        return new ArrayList<>();
+        List<Move> allowedMoves = new ArrayList<>();
+
+        for (Coordinates dir : Coordinates.axialDirections) {
+            addMoveIfAllowed(allowedMoves, new Move(from, from.plus(dir)), board);
+        }
+
+        for (Coordinates dir : Coordinates.diagonalDirections) {
+            addMoveIfAllowed(allowedMoves, new Move(from,  from.plus(dir)), board);
+        }
+
+        return allowedMoves;
     }
+
+    private void addMoveIfAllowed(List<Move> allowedMoves, Move move, Board board) {
+        if (move.getTo().isOnBoard() && board.isEmptyOrCapturable(move.getTo(), colour)) {
+            allowedMoves.add(move);
+        }
+    }
+
 }
