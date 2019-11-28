@@ -7,6 +7,7 @@ import training.chessington.model.PlayerColour;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractPiece implements Piece {
 
@@ -36,7 +37,7 @@ public abstract class AbstractPiece implements Piece {
     List<Move> getMovesInDirection(Coordinates from, Coordinates dir, Board board) {
         List<Move> allowedMoves = new ArrayList<>();
         for(Coordinates to = from.plus(dir); to.isOnBoard(); to = to.plus(dir)) {
-            if(board.isEmpty(to) || board.isCapturable(to, colour)) {
+            if(board.isEmptyOrCapturable(to, colour)) {
                 allowedMoves.add(new Move(from, to));
             }
             if(!board.isEmpty(to)) {
@@ -44,5 +45,15 @@ public abstract class AbstractPiece implements Piece {
             }
         }
         return allowedMoves;
+    }
+
+    Optional<Move> getMoveOneStepInDirection(Coordinates from, Coordinates dir, Board board) {
+        Coordinates to = from.plus(dir);
+
+        if(to.isOnBoard() && board.isEmptyOrCapturable(to, colour)) {
+            return Optional.of(new Move(from, to));
+        } else {
+            return Optional.empty();
+        }
     }
 }
