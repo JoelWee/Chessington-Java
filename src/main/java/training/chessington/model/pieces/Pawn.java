@@ -19,17 +19,26 @@ public class Pawn extends AbstractPiece {
 
         int direction = getDirection();
         Move singleStepForward = new Move(from, from.plus(direction, 0));
-        addMoveIfAllowed(allowedMoves, singleStepForward, board);
+        addNonCaptureMoveIfAllowed(allowedMoves, singleStepForward, board);
 
         if (hasNotMoved(from)) {
             Move twoStepsForward = new Move(from, from.plus(direction * 2, 0));
-            addMoveIfAllowed(allowedMoves, twoStepsForward, board);
+            addNonCaptureMoveIfAllowed(allowedMoves, twoStepsForward, board);
         }
+
+        addCaptureMoveIfAllowed(allowedMoves, new Move(from, from.plus(direction, 1)), board);
+        addCaptureMoveIfAllowed(allowedMoves, new Move(from, from.plus(direction, -1)), board);
 
         return allowedMoves;
     }
 
-    private void addMoveIfAllowed(List<Move> allowedMoves, Move move, Board board) {
+    private void addCaptureMoveIfAllowed(List<Move> allowedMoves, Move move, Board board) {
+        if (move.getTo().isOnBoard() && board.get(move.getTo()) != null && board.get(move.getTo()).getColour() != colour) {
+            allowedMoves.add(move);
+        }
+    }
+
+    private void addNonCaptureMoveIfAllowed(List<Move> allowedMoves, Move move, Board board) {
         if (move.getTo().isOnBoard() && board.get(move.getTo()) == null) {
             allowedMoves.add(move);
         }
