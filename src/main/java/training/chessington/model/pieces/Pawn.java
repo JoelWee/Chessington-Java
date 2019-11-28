@@ -21,7 +21,7 @@ public class Pawn extends AbstractPiece {
         Move singleStepForward = new Move(from, from.plus(direction, 0));
         addNonCaptureMoveIfAllowed(allowedMoves, singleStepForward, board);
 
-        if (hasNotMoved(from)) {
+        if (hasNotMoved(from) && allowedMoves.size() > 0) {
             Move twoStepsForward = new Move(from, from.plus(direction * 2, 0));
             addNonCaptureMoveIfAllowed(allowedMoves, twoStepsForward, board);
         }
