@@ -17,10 +17,24 @@ public class Pawn extends AbstractPiece {
     public List<Move> getAllowedMoves(Coordinates from, Board board) {
         List<Move> allowedMoves = new ArrayList<>();
 
-        int direction = colour == PlayerColour.WHITE ? -1 : 1;
-        Move singleStepForward = new Move(from, new Coordinates(from.getRow() + direction, from.getCol()));
+        int direction = getDirection();
+        Move singleStepForward = new Move(from, from.plus(direction, 0));
         allowedMoves.add(singleStepForward);
 
+        if (hasNotMoved(from)) {
+            Move twoStepsForward = new Move(from, from.plus(direction * 2, 0));
+            allowedMoves.add(twoStepsForward);
+        }
+
         return allowedMoves;
+    }
+
+    private int getDirection() {
+        return colour == PlayerColour.WHITE ? -1 : 1;
+    }
+
+    private boolean hasNotMoved(Coordinates from) {
+        int startRow = colour == PlayerColour.WHITE ? 6 : 1;
+        return startRow == from.getRow();
     }
 }
