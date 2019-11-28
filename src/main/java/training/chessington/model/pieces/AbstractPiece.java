@@ -13,10 +13,12 @@ public abstract class AbstractPiece implements Piece {
 
     protected final Piece.PieceType type;
     protected final PlayerColour colour;
+    protected boolean hasBeenMoved;
 
     protected AbstractPiece(Piece.PieceType type, PlayerColour colour) {
         this.type = type;
         this.colour = colour;
+        hasBeenMoved = false;
     }
 
     @Override
@@ -32,6 +34,16 @@ public abstract class AbstractPiece implements Piece {
     @Override
     public String toString() {
         return colour.toString() + " " + type.toString();
+    }
+
+    @Override
+    public void setMoved() {
+        hasBeenMoved = true;
+    }
+
+    @Override
+    public boolean  hasBeenMoved() {
+        return hasBeenMoved;
     }
 
     List<Move> getMovesInDirection(Coordinates from, Coordinates dir, Board board) {

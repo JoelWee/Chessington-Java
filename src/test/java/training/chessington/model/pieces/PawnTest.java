@@ -304,4 +304,80 @@ public class PawnTest {
         Coordinates otherDiagonal = pawnCoords.plus(1, -1);
         assertThat(moves).doesNotContain(new Move(pawnCoords, otherDiagonal));
     }
+
+    @Test
+    public void whitePawnsCanEnPassant() {
+        // Arrange
+        Board board = Board.empty();
+        Piece pawn = new Pawn(PlayerColour.WHITE);
+        Coordinates pawnCoords = new Coordinates(3, 4);
+        board.placePiece(pawnCoords, pawn);
+
+        Piece enemyPiece = new Pawn(PlayerColour.BLACK);
+        Coordinates enemyCoords = new Coordinates(1, 3);
+        board.placePiece(enemyCoords, enemyPiece);
+
+
+        Coordinates newEnemyCoords = enemyCoords.plus(2, 0);
+
+        board.move(enemyCoords, newEnemyCoords);
+
+        // Act
+        List<Move> moves = pawn.getAllowedMoves(pawnCoords, board);
+
+        // Assert
+        assertThat(moves).contains(new Move(pawnCoords, newEnemyCoords));
+    }
+
+    @Test
+    public void blackPawnsCanEnPassant() {
+        // Arrange
+        Board board = Board.empty();
+        Piece pawn = new Pawn(PlayerColour.BLACK);
+        Coordinates pawnCoords = new Coordinates(5, 4);
+        board.placePiece(pawnCoords, pawn);
+
+        Piece enemyPiece = new Pawn(PlayerColour.WHITE);
+        Coordinates enemyCoords = new Coordinates(7, 3);
+        board.placePiece(enemyCoords, enemyPiece);
+
+
+        Coordinates newEnemyCoords = enemyCoords.plus(-2, 0);
+
+        board.move(enemyCoords, newEnemyCoords);
+
+        // Act
+        List<Move> moves = pawn.getAllowedMoves(pawnCoords, board);
+
+        // Assert
+        assertThat(moves).contains(new Move(pawnCoords, newEnemyCoords));
+    }
+
+
+    @Test
+    public void pawnsCannotEnPassantIfNotImmediate() {
+        // Arrange
+        Board board = Board.empty();
+        Piece pawn = new Pawn(PlayerColour.WHITE);
+        Coordinates pawnCoords = new Coordinates(3, 4);
+        board.placePiece(pawnCoords, pawn);
+
+        Piece enemyPiece = new Pawn(PlayerColour.BLACK);
+        Coordinates enemyCoords = new Coordinates(1, 3);
+        board.placePiece(enemyCoords, enemyPiece);
+
+        Coordinates newEnemyCoords = enemyCoords.plus(2, 0);
+        board.move(enemyCoords, newEnemyCoords);
+
+        Piece otherPiece = new Pawn(PlayerColour.WHITE);
+        Coordinates otherCoords = new Coordinates(3, 3);
+        board.placePiece(otherCoords, otherPiece);
+        board.move(otherCoords, otherCoords.plus(-1, 0));
+
+        // Act
+        List<Move> moves = pawn.getAllowedMoves(pawnCoords, board);
+
+        // Assert
+        assertThat(moves).doesNotContain(new Move(pawnCoords, newEnemyCoords));
+    }
 }

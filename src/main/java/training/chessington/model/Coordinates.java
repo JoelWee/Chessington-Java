@@ -21,6 +21,12 @@ public final class Coordinates {
                 .collect(Collectors.toList());
     }
 
+    public static int manhattanDistanceBetween(Coordinates a, Coordinates b) {
+        int rowDist = Math.abs(a.getRow() - b.getRow());
+        int colDist =  Math.abs(a.getCol() - b.getCol());
+        return rowDist + colDist;
+    }
+
     public Coordinates(int row, int col) {
         this.row = row;
         this.col = col;

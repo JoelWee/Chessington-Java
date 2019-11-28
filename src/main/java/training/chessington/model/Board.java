@@ -3,8 +3,8 @@ package training.chessington.model;
 import training.chessington.model.pieces.*;
 
 public class Board {
-
     private Piece[][] board = new Piece[8][8];
+    private Move lastMove;
 
     private Board() {
     }
@@ -20,6 +20,10 @@ public class Board {
         }
 
         return board;
+    }
+
+    public static int getBackRowIndex(PlayerColour colour) {
+        return colour == PlayerColour.WHITE ? 7 : 0;
     }
 
     public static Board empty() {
@@ -41,7 +45,48 @@ public class Board {
         return board[coords.getRow()][coords.getCol()];
     }
 
+    public Move getLastMove() {
+        return lastMove;
+    }
+
     public void move(Coordinates from, Coordinates to) {
+        if (isCastleMove(from, to)) {
+            castle(from, to);
+        } else {
+            board[to.getRow()][to.getCol()] = board[from.getRow()][from.getCol()];
+            board[from.getRow()][from.getCol()] = null;
+        }
+
+        lastMove = new Move(from, to);
+        get(to).setMoved();
+    }
+
+    public boolean isSquareUnderThreat(Coordinates square, PlayerColour colour) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Coordinates curr = new Coordinates(i, j);
+                Piece currPiece = get(curr);
+                if (currPiece != null && currPiece.getColour() != colour &&
+                        currPiece.getAllowedMoves(curr, this)
+                                .stream()
+                                .map(Move::getTo)
+                                .anyMatch(square::equals)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCastleMove(Coordinates from, Coordinates to) {
+        return get(from).getType() == Piece.PieceType.KING && Math.abs(from.getCol() - to.getCol()) > 1;
+    }
+
+    private void castle(Coordinates from, Coordinates to) {
+        int direction = from.getCol() - to.getCol() > 0 ? -1 : 1;
+        int rookCol = direction > 0 ? 7 : 0;
+        move(new Coordinates(from.getRow(), rookCol), from.plus(0, direction));
+
         board[to.getRow()][to.getCol()] = board[from.getRow()][from.getCol()];
         board[from.getRow()][from.getCol()] = null;
     }
@@ -50,8 +95,7 @@ public class Board {
         board[coords.getRow()][coords.getCol()] = piece;
     }
 
-
-    public boolean isEmptyOrCapturable(Coordinates coords,  PlayerColour ownColour) {
+    public boolean isEmptyOrCapturable(Coordinates coords, PlayerColour ownColour) {
         return isEmpty(coords) || isCapturable(coords, ownColour);
     }
 
@@ -61,5 +105,9 @@ public class Board {
 
     public boolean isCapturable(Coordinates coords, PlayerColour ownColour) {
         return !isEmpty(coords) && get(coords).getColour() != ownColour;
+    }
+
+    public boolean hasLastMove() {
+        return lastMove != null;
     }
 }

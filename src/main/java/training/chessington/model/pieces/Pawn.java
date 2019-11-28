@@ -7,6 +7,7 @@ import training.chessington.model.PlayerColour;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Pawn extends AbstractPiece {
     public Pawn(PlayerColour colour) {
@@ -29,6 +30,8 @@ public class Pawn extends AbstractPiece {
         addCaptureMoveIfAllowed(allowedMoves, new Move(from, from.plus(direction, 1)), board);
         addCaptureMoveIfAllowed(allowedMoves, new Move(from, from.plus(direction, -1)), board);
 
+        addEnPassantMove(allowedMoves, from, board);
+
         return allowedMoves;
     }
 
@@ -44,12 +47,23 @@ public class Pawn extends AbstractPiece {
         }
     }
 
+    private void addEnPassantMove(List<Move> allowedMoves, Coordinates from, Board board) {
+        if(board.hasLastMove()){
+            Move lastMove = board.getLastMove();
+            Piece enemyPiece = board.get(lastMove.getTo());
+            if(enemyPiece.getType() == PieceType.PAWN && Coordinates.manhattanDistanceBetween(lastMove.getFrom(), lastMove.getTo()) == 2 &&
+                    Coordinates.manhattanDistanceBetween(from, lastMove.getTo()) == 1){
+                allowedMoves.add(new Move(from, lastMove.getTo()));
+            }
+        }
+    }
+
     private int getDirection() {
         return colour == PlayerColour.WHITE ? -1 : 1;
     }
 
     private boolean hasNotMoved(Coordinates from) {
-        int startRow = colour == PlayerColour.WHITE ? 6 : 1;
+        int startRow = Board.getBackRowIndex(colour) + getDirection();
         return startRow == from.getRow();
     }
 }
