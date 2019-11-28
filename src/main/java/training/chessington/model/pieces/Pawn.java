@@ -30,7 +30,7 @@ public class Pawn extends AbstractPiece {
     }
 
     private void addMoveIfAllowed(List<Move> allowedMoves, Move move, Board board) {
-        if(board.get(move.getTo()) == null) {
+        if (move.getTo().isOnBoard() && board.get(move.getTo()) == null) {
             allowedMoves.add(move);
         }
     }
