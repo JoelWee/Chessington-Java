@@ -19,14 +19,20 @@ public class Pawn extends AbstractPiece {
 
         int direction = getDirection();
         Move singleStepForward = new Move(from, from.plus(direction, 0));
-        allowedMoves.add(singleStepForward);
+        addMoveIfAllowed(allowedMoves, singleStepForward, board);
 
         if (hasNotMoved(from)) {
             Move twoStepsForward = new Move(from, from.plus(direction * 2, 0));
-            allowedMoves.add(twoStepsForward);
+            addMoveIfAllowed(allowedMoves, twoStepsForward, board);
         }
 
         return allowedMoves;
+    }
+
+    private void addMoveIfAllowed(List<Move> allowedMoves, Move move, Board board) {
+        if(board.get(move.getTo()) == null) {
+            allowedMoves.add(move);
+        }
     }
 
     private int getDirection() {
