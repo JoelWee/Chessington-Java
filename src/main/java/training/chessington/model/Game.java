@@ -4,6 +4,7 @@ import training.chessington.model.pieces.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Game {
     public static final int SIZE = 8;
@@ -31,7 +32,34 @@ public class Game {
             return new ArrayList<>();
         }
 
-        return piece.getAllowedMoves(from, board);
+        List<Move> allowedMoves = piece.getAllowedMoves(from, board);
+
+        allowedMoves = allowedMoves.stream()
+                .filter(this::noOwnCheckAfterMove)
+                .collect(Collectors.toList());
+
+        return allowedMoves;
+    }
+
+    private boolean isUnderCheck(PlayerColour colour) {
+        return board.findAny(Piece.PieceType.KING, colour)
+                .map(coords -> board.isSquareUnderThreat(coords, colour))
+                .orElse(false);
+    }
+
+    private boolean noOwnCheckAfterMove(Move move) {
+        Piece origToPiece = board.get(move.getTo());
+        Piece origFromPiece = board.get(move.getFrom());
+
+        board.placePiece(move.getTo(), origFromPiece);
+        board.placePiece(move.getFrom(), null);
+
+        boolean stopsCheck = !isUnderCheck(nextPlayer);
+
+        board.placePiece(move.getTo(), origToPiece);
+        board.placePiece(move.getFrom(), origFromPiece);
+
+        return stopsCheck;
     }
 
     public void makeMove(Move move) throws InvalidMoveException {
@@ -57,6 +85,10 @@ public class Game {
 
         board.move(from, to);
         nextPlayer = nextPlayer == PlayerColour.WHITE ? PlayerColour.BLACK : PlayerColour.WHITE;
+
+        if(isUnderCheck(nextPlayer)) {
+            isEnded = board.hasNoMoves(nextPlayer);
+        }
     }
 
     public boolean isEnded() {

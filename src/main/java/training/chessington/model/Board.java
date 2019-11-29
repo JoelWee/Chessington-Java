@@ -2,6 +2,8 @@ package training.chessington.model;
 
 import training.chessington.model.pieces.*;
 
+import java.util.Optional;
+
 public class Board {
     private Piece[][] board = new Piece[8][8];
     private Move lastMove;
@@ -43,6 +45,19 @@ public class Board {
 
     public Piece get(Coordinates coords) {
         return board[coords.getRow()][coords.getCol()];
+    }
+
+    public Optional<Coordinates> findAny(Piece.PieceType pieceType, PlayerColour colour) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Coordinates curr = new Coordinates(i, j);
+                Piece currPiece = get(curr);
+                if (currPiece != null && currPiece.getColour() == colour && currPiece.getType() == pieceType) {
+                    return Optional.of(curr);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public Move getLastMove() {
@@ -109,5 +124,19 @@ public class Board {
 
     public boolean hasLastMove() {
         return lastMove != null;
+    }
+
+    public boolean hasNoMoves(PlayerColour colour) {
+        int numMoves = 0;
+        for(int i = 0; i<8; i++) {
+            for(int j = 0; j<8;j++){
+                Coordinates curr = new Coordinates(i, j);
+                Piece currPiece = get(curr);
+                if (currPiece != null && currPiece.getColour() == colour) {
+                    numMoves += currPiece.getAllowedMoves(curr, this).size();
+                }
+            }
+        }
+        return numMoves == 0;
     }
 }

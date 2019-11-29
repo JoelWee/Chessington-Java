@@ -1,7 +1,11 @@
 package training.chessington.model;
 
 import org.junit.Test;
+import training.chessington.model.pieces.King;
 import training.chessington.model.pieces.Piece;
+import training.chessington.model.pieces.Rook;
+
+import java.util.List;
 
 import static training.chessington.model.pieces.Piece.PieceType.PAWN;
 import static training.chessington.model.pieces.PieceAssert.*;
